@@ -1,0 +1,279 @@
+#ECHO
+T			DoEcho
+
+#COMPONENTMAP                   For 128+ cores like production run
+GM  0 -3 -1  -1         GM runs on 0:nProc-3 multithreaded
+IE -2 -1  1             IE runs on last 2 PE-s
+IM -2 -2  1             IM runs on nProc-2 PE
+
+#INCLUDE
+RESTART.in
+
+#DESCRIPTION
+Continue Gannon Storm simulation.
+
+#TIMEACCURATE
+T			DoTimeAccurate
+
+#PROGRESS
+100			DnProgressShort
+1000			DnProgressLong
+
+#MAKEDIR
+F                       DoMakeDir
+
+#SAVERESTART
+T                       DoSaveRestart
+-1                      DnSaveRestart
+60.0                  DtSaveRestart
+
+#COUPLEORDER
+5			nCouple
+IE GM			NameSourceTarget
+IE IM			NameSourceTarget
+GM IE			NameSourceTarget
+GM IM			NameSourceTarget
+IM GM			NameSourceTarget
+
+#COUPLE2
+GM			NameComp1
+IE			NameComp2
+-1                      DnCouple
+5.0                     DtCouple
+
+#COUPLE2
+IM			NameComp1
+GM			NameComp2
+-1                      DnCouple
+10.0                    DtCouple
+
+#COUPLE1
+IE			NameComp1
+IM			NameComp2
+-1                      DnCouple
+10.0                    DtCouple
+
+#COUPLETIME
+GM			NameComp
+F			DoCoupleOnTime
+
+#BEGIN_COMP GM ---------------------------------------------------------------
+
+#INCLUDE
+GM/restartIN/restart.H
+
+#GRIDBLOCKALL
+100000
+
+#OUTERBOUNDARY
+outflow			TypeBc1
+vary			TypeBc2
+float			TypeBc3
+float			TypeBc4
+float			TypeBc5
+float			TypeBc6
+
+#INNERBOUNDARY
+ionosphere		TypeBcInner
+
+! Set the inner boundary density as Rho0Cpcp + RhoPerCpcp*CPCP[keV]
+#CPCPBOUNDARY
+T                       UseCpcpBc  (rest is read if true)
+28.0                    Rho0Cpcp   [amu/cc]
+0.1                     RhoPerCpcp [amu/cc / keV]
+
+#SOLARWINDFILE
+T				UseSolarWindFile
+imf_noaa_may2024.txt  	NameSolarWindFile
+
+#MAGNETOMETER
+mags_all.dat		NameMagInputFile
+single			TypeFileOut
+-1			DnOutput
+60.0			DtOutput
+
+#MAGPERTURBINTEGRAL
+T                       UseSurfaceIntegral
+T                       UseFastFacIntegral
+MAG                     TypeCoordIndex
+MAG                     TypeCoordFacGrid
+
+#GEOMAGINDICES
+180			nSizeKpWindow [min]
+60.0			DtOutput      [sec]
+
+#MAGNETOMETERGRID
+2                       nMagGridFile
+global real4            StrGridFileOut_I
+GEO                     TypeCoordGrid_I
+72                      nGridLon_I
+25                      nGridLat_I
+0.                      GridLonMin_I
+360.                    GridLonMax_I
+-85.                    GridLatMin_I
+85.                     GridLatMax_I
+-1                      DnSaveMagGrid_I
+1 min                   DtSaveMagGrid_I
+us real4                StrGridFileOut_I
+GEO                     TypeCoordGrid_I
+23                      nGridLon_I
+13                      nGridLat_I
+190.                    GridLonMin_I
+300.                    GridLonMax_I
+20.                     GridLatMin_I
+85.                     GridLatMax_I
+-1                      DnSaveMagGrid_I
+20                      DtSaveMagGrid_I
+
+#NONCONSERVATIVE
+T                       UseNonConservative
+
+#CONSERVATIVECRITERIA
+1                       nConservCrit
+parabola                TypeConservCrit_I
+ 5.0                    xParabolaConserv
+15.0                    yParabolaConserv
+
+#IMCOUPLING
+20.0                    TauCoupleIm
+T                       DoImSatTrace
+T                       DoCoupleImPressure
+T                       DoCoupleImDensity
+0.01			DensityCoupleFloor
+F                       DoFixPolarRegion
+
+! Pressures below pMinDim are replaced with pMinDim.
+#MINIMUMPRESSURE
+1e-5			pMinDim [nPa]
+
+#SAVELOGNAME
+F                       IsLogName_n
+T                       IsLogName_e
+
+#SAVEPLOTNAME
+F                       IsPlotName_n
+F                       IsPlotName_t
+T                       IsPlotName_e
+
+#PLOTFILENAME
+date			TimeUnitMax
+
+#SAVELOGFILE
+T			DoSaveLogfile
+VAR step date		StringLogfile
+-1			DnSaveLogfile
+1.0			DtSaveLogfile
+dt rho mx my mz p bx by bz pmin pmax dst cpcpn
+3.0			StringRFlux
+
+#SAVEPLOT
+3                       nPlotFiles
+y=0 MHD idl             StringPlot
+-1                      DnSavePlot
+60.			DtSavePlot
+-1.0			DxSavePlot
+z=0 MHD idl             StringPlot
+-1                      DnSavePlot
+60.			DtSavePlot
+-1.0			DxSavePlot
+z=0 ray idl             StringPlot
+-1                      DnSavePlot
+60.                     DtSavePlot
+-1.0                    DxSavePlot
+
+#SCHEME
+2			nORDER
+Sokolov			TypeFlux
+mc3	                TypeLimiter
+1.2			BetaLimiter
+
+#BORIS
+T			UseBorisCorrection
+0.01			BorisClightFactor
+
+#REGION
+borisregion             NameArea
+sphere tapered          NameShape
+-4.0			xPosition
+0.0			yPosition
+0.0			zPosition
+14.0			Radius
+2.0			Taper
+
+#BORISREGION
+borisregion			NameBorisRegion
+
+#TIMESTEPPING
+1			nStage
+0.85			CflExpl
+
+#END_COMP GM -----------------------------------------------------------------
+
+#BEGIN_COMP IM ---------------------------------------------------------------
+
+#RESTART
+T			DoRestart
+
+! Number density fractions for H+ and O+. Has to add up to 1.0
+#COMPOSITION
+FIXED			 NameCompModel
+0.9                      FractionH
+0.1                      FractionO
+
+! Decay for RCM particle densities
+#DECAY
+T 			UseDecay
+36000. 			DecayTimescale in seconds
+
+#SAVEPLOT
+3                       nFilesPlot
+2d min tec              StringPlot
+100                     DnSavePlot
+-1                      iDtSavePlot [sec]
+2d mc1 tec              StringPlot
+100                     DnSavePlot
+-1                      iDtSavePlot [sec]
+2d mc2 tec              StringPlot
+100                     DnSavePlot
+-1                      iDtSavePlot [sec]
+
+#END_COMP IM -----------------------------------------------------------------
+
+#BEGIN_COMP IE ---------------------------------------------------------------
+
+#AURORALOVAL
+T             UseOval (rest of parameters read if true)
+T             UseOvalShift
+F             UseSubOvalConductance
+T             UseAdvancedOval
+F	      DoFitCircle
+
+#IONOSPHERE
+5                      TypeConductanceModel
+F                       UseFullCurrent
+F			UseFakeRegion2
+227.9                   F107Flux
+1.0                     StarLightPedConductance
+0.25                    PolarCapPedConductance
+
+#BOUNDARY
+10.0                    LatBoundary
+
+#SAVEPLOT
+1			nPlotFile
+max idl                 StringPlot
+-1                      DnSavePlot
+60.0			DtSavePlot
+
+#END_COMP IE -----------------------------------------------------------------
+
+#ENDTIME            
+2024			year
+05              	month
+11              	day
+00			hour
+00             		minute
+00              	second
+0.0			FracSecond
+
+#END ############################################################
