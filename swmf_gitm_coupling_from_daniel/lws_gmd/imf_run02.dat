@@ -1,0 +1,23 @@
+LWS small scale GMD project.
+Input file for the SWMF.
+
+Equinox conditions; to be used with IDEAL AXES (dipole || rotation)
+Simple F10.7 conditions: 150sfu
+
+Variable list:
+YYYY MM DD HH MN SC MSC BX BY BZ VX VY VZ Density Temperature
+
+Units: nT, km/s, #/cc, K
+Coordinate system: GSM
+
+Initialization: 6-hour simulation, 2-hour quiet, 3-hour active, 1-hour recovery.
+Step function for forcing changes
+
+#START
+ 2015  3 19 23  0  0  0     0.00      0.00     -1.00   -400.00      0.00      0.00      3.74    96831.20
+ 2015  3 20  0 59  0  0     0.00      0.00     -1.00   -400.00      0.00      0.00      3.74    96831.20
+ 2015  3 20  1  0  0  0     0.00      0.00    -20.00   -400.00      0.00      0.00     18.68    96831.20
+ 2015  3 20  3 59  0  0     0.00      0.00    -20.00   -400.00      0.00      0.00     18.68    96831.20
+ 2015  3 20  6  0  0  0     0.00      0.00     -1.00   -400.00      0.00      0.00      3.74    96831.20
+ 2015  3 20 12  0  0  0     0.00      0.00     -1.00   -400.00      0.00      0.00      3.74    96831.20
+ 
