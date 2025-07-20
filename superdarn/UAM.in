@@ -40,7 +40,7 @@ T
 2014		year
 03		month
 26		day
-06		hour
+08		hour
 30		minute
 00		second
 
@@ -60,9 +60,9 @@ F		if you want to run with msis and iri only (i.e. not GITM)
 
 #SAVEPLOTS
 600.0		dt for writing restart files
-2		how many output files do you want
+1		how many output files do you want
 3DUSR		output style
-60.0		dt for output
+7200.0		dt for output
 2DUSR		output style
 60.0		dt for output
 
@@ -90,9 +90,9 @@ SuperDARN_GPotMag_20140326_P0.txt
 
 #SuperDARM
 T
-SuperDARN_EPotMag_20140326_P2.txt
+SuperDARN_MPotMag_20140326_P2.txt
 163
-SuperDARN_EPotMag_20140326_P2BND.txt
+SuperDARN_MPotMag_20140326_P2BND.txt
 60
 
 
@@ -249,18 +249,24 @@ F		Whether to couple to GLOW
 
 #SATELLITES
 3               nSats
+cl1_140326.txt
+5              SatDtPlot
+cl2_140326.txt
+5              SatDtPlot
+cl3_140326.txt
+5              SatDtPlot
 sc0_SD_140326.txt
-60              SatDtPlot
+5              SatDtPlot
 sc1_SD_140326.txt
-60              SatDtPlot
+5              SatDtPlot
 sc2_SD_140326.txt
-60              SatDtPlot
+5              SatDtPlot
 sc3_SD_140326.txt
-60              SatDtPlot
+5              SatDtPlot
 sc4_SD_140326.txt
-60              SatDtPlot
+5              SatDtPlot
 sc5_SD_140326.txt
-60              SatDtPlot
+5              SatDtPlot
 
 
 #END
